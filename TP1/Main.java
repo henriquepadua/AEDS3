@@ -313,9 +313,70 @@ public class Main {
                 }
                 //pos = arquivodb.getFilePointer() + tamanho + 4;// se a conta foi apagada ou o id nao foi encontrado move para a proxima lapide do proximo registro (o + 4 para pular os 4 bytes do id)
             } while (id !=ultimaId && id !=jogador.Id); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada 
+            System.out.println("\nJogador não encontrado. Aperte enter para continuar.");
+            sc.nextLine();
+            return resp;
         }
           return resp;
     }
+
+    public static boolean Delete(RandomAccessFile arquivodb,Jogador jogador) throws IOException{//metodo para deletar conta
+        System.out.println("\n=== DELETAR UM JOGADOR ===\n");
+		System.out.println("Digite a ID do Jogador que quer deletar:");
+        
+        boolean resp = false;
+
+        int idDesejada = sc.nextInt();
+		sc.nextLine();
+
+        arquivodb.seek(0);
+        jogador.Id = idDesejada;
+
+        int ultimaId  = arquivodb.readInt();
+
+        if(ultimaId > 0 ) { // se tiver mais de um registro
+            
+            int idAtual = 0;
+
+            do {
+                
+                long voltaParaTamanho = arquivodb.getFilePointer();
+
+                int tamanho = arquivodb.readInt();//ler o tamanho do registro
+
+                long pos = arquivodb.getFilePointer();
+
+                char lapide = arquivodb.readChar();
+
+                idAtual = arquivodb.readInt();// ler o id do jogador pesquisado atual
+                
+                if(lapide != '*'){//verifica se a lapide esta vazia ou foi apagada
+                    
+
+                    if(idAtual != jogador.Id){//se id lido do arquivo for o mesmo da nova conta                     
+                        arquivodb.seek(pos);
+                        arquivodb.skipBytes(tamanho);
+
+                    }else{
+                        arquivodb.seek(pos);
+                        arquivodb.writeChar('*');
+                        resp = true;
+                    }
+                }
+                else if(lapide == '*' && idAtual == jogador.Id){
+                    System.out.println("Jogador ja foi deletado");
+                    return resp;
+                }
+                else if(lapide == '*' && idAtual < jogador.Id){
+                    arquivodb.seek(pos);
+                    arquivodb.skipBytes(tamanho);
+                }
+            } while (idAtual !=ultimaId && idAtual !=jogador.Id); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada    
+            System.out.println("Jogador nao existe");
+            return resp;
+        }
+        return resp;
+      }
 
     public static void main(String[] args) throws IOException 
     {
@@ -352,13 +413,10 @@ public class Main {
                 case "3":
                     Update(arquivodb,csv, fifa);
                     break;
-                // case "4":
-                //     fifa = alterar(arq, comeco);
-                //     break;
+                 case "4":
+                     Delete(arquivodb, fifa);
+                     break;
                 // case "5":
-                //     deletar(arq, comeco);
-                //     break;
-                // case "6":
                 //     intercalacaoBalanceada2(arq, comeco);
                 //     break;
                 //     System.out.println("\nOpção inválida. Tente novamente.\n\n");
