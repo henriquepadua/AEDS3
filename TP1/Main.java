@@ -253,6 +253,70 @@ public class Main {
 		return null;
 	}
 
+    public static boolean Update(RandomAccessFile arquivodb,RandomAccessFile csv,Jogador jogador) throws IOException{//metodo para atualizar jogador
+        System.out.println("\n=== ATUALIZAR UM JOGADOR ===\n");
+		System.out.println("Digite a ID do Jogador que quer atualizar:");
+        
+        boolean resp = false;
+        long comeco = 0;
+        int id = 0;
+
+        int idDesejada = sc.nextInt();
+		sc.nextLine();
+  
+        jogador = tratamentoFluxoDados(arquivodb, csv, jogador);
+        jogador.Id = idDesejada;
+
+        arquivodb.seek(comeco);// move a posicao para a primeira lapide
+  
+        int ultimaId  = arquivodb.readInt();
+
+        if(ultimaId > 0 ) { // se tiver mais de um registro
+                
+            do {
+                
+                long voltaParaTamanho = arquivodb.getFilePointer();
+
+                int tamanho = arquivodb.readInt();//ler o tamanho do registro
+
+                long pos = arquivodb.getFilePointer();
+
+                //if(lapide != ' ' && id == idConta) break;//se a conta verificada ja foi apagada e o id lido do arquivo for o mesmo passado por parametro retorna null
+
+                if(arquivodb.readChar() != '*'){//verifica se a lapide esta vazia ou foi apagada
+                    id = arquivodb.readInt();// ler o id do jogador pesquisado atual
+
+                    if(id == jogador.Id){//se id lido do arquivo for o mesmo da nova conta
+
+                        byte[] conta = jogador.toByteArray();// escreve os dados da nova conta e retorna o bytearray
+
+                        if(conta.length <= tamanho){//se o tamanho da nova conta for igual ao tamanho da conta lida do arquivo
+                        arquivodb.seek(pos);//retorna o ponteiro para depois do tamanho para escrever a nova conta      
+                        
+                        arquivodb.write(conta);//escreve o novo bytearray
+
+                        resp =  true;//resp recebe true se todos os dados conferem
+                        }
+                        else{
+                        arquivodb.seek(pos+4);   arquivodb.writeChar('*');
+                        
+                        arquivodb.seek(arquivodb.length()); arquivodb.write(conta);
+                        
+                        resp = true;
+                        }
+                        return resp;
+                    }
+                    else{ // se nao for o registro desejado, pula para o proximo
+                        arquivodb.seek(pos);
+                        arquivodb.skipBytes(tamanho);
+                    }
+                }
+                //pos = arquivodb.getFilePointer() + tamanho + 4;// se a conta foi apagada ou o id nao foi encontrado move para a proxima lapide do proximo registro (o + 4 para pular os 4 bytes do id)
+            } while (id !=ultimaId && id !=jogador.Id); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada 
+        }
+          return resp;
+    }
+
     public static void main(String[] args) throws IOException 
     {
         RandomAccessFile csv = new RandomAccessFile("Fifa 23 Players Data.csv", "rw");
@@ -273,22 +337,21 @@ public class Main {
             System.out.println("Escolha uma opção:");
             System.out.println("1) Criar Jogador");
             System.out.println("2) Pesquisar Jogador");
-            System.out.println("4) Alterar Jogador");
-            System.out.println("5) Deletar Jogador");
-            System.out.println("6) Intercalação balanceada comum");
+            System.out.println("3) Alterar Jogador");
+            System.out.println("4) Deletar Jogador");
+            System.out.println("5) Intercalação balanceada comum");
             System.out.println("S) Sair");
             opcao = sc.nextLine();
             switch(opcao) { // trata as opcoes
                 case "1":
-                fifa = new Jogador();
                     fifa = Create(arquivodb,csv, fifa);
                     break;
                 case "2":
                     Read(arquivodb, 0);
                     break;
-                // case "3":
-                //     transferir(arq, comeco);
-                //     break;
+                case "3":
+                    Update(arquivodb,csv, fifa);
+                    break;
                 // case "4":
                 //     fifa = alterar(arq, comeco);
                 //     break;
