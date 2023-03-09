@@ -174,7 +174,7 @@ public class Main {
     	return -1;
     }
 
-    public static String Read(RandomAccessFile arquivodb,int id){
+    public static Jogador Read(RandomAccessFile arquivodb,int id){
         System.out.println("\n=== BUSCAR UM JOGADOR ===\n");
 		System.out.println("Digite a ID do Jogador que quer exibir:");
 
@@ -216,6 +216,8 @@ public class Main {
                                 arquivodb.seek(pos);
                                 arquivodb.skipBytes(tamRegAtual);
                             }
+                            if(jogadoresPossiveis == 1 && idAtual == idDesejada){ posRegistro = arquivodb.getFilePointer() - 10 ; break;
+                            }
                             
                         } else { // se o registro atual tiver sido deletado
                             if(lapide == '*' && idAtual == idDesejada){
@@ -225,12 +227,13 @@ public class Main {
                             }else{
                                 arquivodb.seek(pos + tamRegAtual); // vai para o proximo registro
                             }
+                            if(jogadoresPossiveis == 1 && idAtual == idDesejada) idAtual = idAtual - 1;
                             if(jogadoresPossiveis == 2) return null;
                         }
                         posRegistro = arquivodb.getFilePointer();
                     } while (idAtual!=ultimaId && idAtual!=idDesejada); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada
 				
-				if(idAtual == idDesejada) { // se encontramos o registro desejado, le os dados do registro e o imprime
+				if(idAtual == idDesejada && lapide != '*') { // se encontramos o registro desejado, le os dados do registro e o imprime
                     if(jogadoresPossiveis == 1) arquivodb.seek(posRegistro+10);
 					tamanhoString = arquivodb.readInt();
 					KnownAs = arquivodb.readUTF();
@@ -249,11 +252,11 @@ public class Main {
 					ImageLink = arquivodb.readUTF();
 					
 					Jogador jogador = new Jogador(idDesejada, KnownAs, FullName, Overall, Potential, Value, PositionsPlayed, BestPosition, Nationality, ImageLink, ultimaId);
-					System.out.println("\nJogador #" + idAtual + ":");
+					System.out.println("\n"+ "Jogador#" + idDesejada + " = " +  jogador.toString());
 					//System.out.println(jogador.toString());
 					System.out.println("\nAperte enter para continuar.");
 					sc.nextLine();
-					return "Deu bom";
+					return jogador;
 				} else {
 					System.out.println("\nJogador não encontrado. Aperte enter para continuar.");
 					sc.nextLine();

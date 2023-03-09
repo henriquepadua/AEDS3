@@ -67,5 +67,12 @@ public class Jogador {
             dos.writeUTF(ImageLink);
             
             return baos.toByteArray();
-        }
+    }
+
+    @Override
+    public String toString(){//metodo para verificar os dados da conta
+      String mostrada = KnownAs + FullName + Overall + Potential + Value + PositionsPlayed + BestPosition + Nationality + ImageLink;
+
+        return mostrada;
+    }
 }
