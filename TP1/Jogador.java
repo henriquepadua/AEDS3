@@ -47,7 +47,7 @@ public class Jogador {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
 
-            dos.writeChar(lapide = ' ');           
+            dos.writeChar(lapide);           
             dos.writeInt(Id);
             dos.writeInt(KnownAs.length());
             dos.writeUTF(KnownAs);           

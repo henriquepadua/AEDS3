@@ -118,6 +118,8 @@ public class Main {
             arquivodb.seek(0);
             
             arquivodb.writeInt(fifa.Id);
+
+            fifa.lapide = ' ';
             
             arquivodb.seek(arquivodb.length());
             byte[] registro = fifa.toByteArray();
@@ -291,6 +293,7 @@ public class Main {
                         byte[] conta = jogador.toByteArray();// escreve os dados da nova conta e retorna o bytearray
 
                         if(conta.length <= tamanho){//se o tamanho da nova conta for igual ao tamanho da conta lida do arquivo
+                            
                         arquivodb.seek(pos);//retorna o ponteiro para depois do tamanho para escrever a nova conta      
                         
                         arquivodb.write(conta);//escreve o novo bytearray
@@ -298,9 +301,13 @@ public class Main {
                         resp =  true;//resp recebe true se todos os dados conferem
                         }
                         else{
-                        arquivodb.seek(pos+4);   arquivodb.writeChar('*');
+                        arquivodb.seek(pos);   arquivodb.writeChar('*');
                         
-                        arquivodb.seek(arquivodb.length()); arquivodb.write(conta);
+                        arquivodb.seek(arquivodb.length()); jogador.lapide = ' ';
+
+                        conta = jogador.toByteArray(); arquivodb.writeInt(conta.length);
+                        
+                        arquivodb.write(conta);
                         
                         resp = true;
                         }
@@ -381,7 +388,7 @@ public class Main {
     public static void main(String[] args) throws IOException 
     {
         RandomAccessFile csv = new RandomAccessFile("Fifa 23 Players Data.csv", "rw");
-        RandomAccessFile arquivodb = new RandomAccessFile("canais.db", "rw");
+        RandomAccessFile arquivodb = new RandomAccessFile("Jogadores.db", "rw");
 
         arquivodb.seek(0); 
         
@@ -392,8 +399,9 @@ public class Main {
 
         boolean sair = false;
         String opcao; Scanner sc = new Scanner(System.in);
-        Jogador fifa = new Jogador();
+        //Jogador fifa = new Jogador();
         while(!sair) { // mostra o menu enquanto a pessoa nao escolher sair
+            Jogador fifa = new Jogador();
             System.out.println("=== SISTEMA DE CONTAS ===\n");
             System.out.println("Escolha uma opção:");
             System.out.println("1) Criar Jogador");
