@@ -195,13 +195,12 @@ public class Main {
 		sc.nextLine();
         
         char lapide;
-
+        long posRegistro = 0;
         try {
 			arquivodb.seek(0);
 			int ultimaId = arquivodb.readInt();
             
 			if(ultimaId > 0 ) { // se tiver mais de um registro
-                while(arquivodb.getFilePointer() < arquivodb.length()){
                     do {
                         pos = arquivodb.getFilePointer();
                         int tamRegAtual = arquivodb.readInt();
@@ -210,6 +209,7 @@ public class Main {
                         lapide = arquivodb.readChar();
 
                         idAtual = arquivodb.readInt();
+                        posRegistro = arquivodb.getFilePointer();
                         if( lapide != '*') { // se o registro atual nao tiver sido deletado
                             
                             if(idAtual!=idDesejada) { // se nao for o registro desejado, pula para o proximo
@@ -227,10 +227,11 @@ public class Main {
                             }
                             if(jogadoresPossiveis == 2) return null;
                         }
+                        posRegistro = arquivodb.getFilePointer();
                     } while (idAtual!=ultimaId && idAtual!=idDesejada); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada
-                }
 				
 				if(idAtual == idDesejada) { // se encontramos o registro desejado, le os dados do registro e o imprime
+                    if(jogadoresPossiveis == 1) arquivodb.seek(posRegistro+10);
 					tamanhoString = arquivodb.readInt();
 					KnownAs = arquivodb.readUTF();
 					tamanhoString = arquivodb.readInt();
@@ -286,6 +287,7 @@ public class Main {
         arquivodb.seek(comeco);// move a posicao para a primeira lapide
   
         int ultimaId  = arquivodb.readInt();
+        char lapide;
 
         if(ultimaId > 0 ) { // se tiver mais de um registro
                 
@@ -297,10 +299,12 @@ public class Main {
 
                 long pos = arquivodb.getFilePointer();
 
-                //if(lapide != ' ' && id == idConta) break;//se a conta verificada ja foi apagada e o id lido do arquivo for o mesmo passado por parametro retorna null
+                lapide = arquivodb.readChar() ;
 
-                if(arquivodb.readChar() != '*'){//verifica se a lapide esta vazia ou foi apagada
-                    id = arquivodb.readInt();// ler o id do jogador pesquisado atual
+                id = arquivodb.readInt();
+
+                if(lapide != '*'){//verifica se a lapide esta vazia ou foi apagada
+                    //id = arquivodb.readInt();// ler o id do jogador pesquisado atual
 
                     if(id == jogador.Id){//se id lido do arquivo for o mesmo da nova conta
 
@@ -331,6 +335,9 @@ public class Main {
                         arquivodb.seek(pos);
                         arquivodb.skipBytes(tamanho);
                     }
+                } else {
+                    arquivodb.seek(pos);
+                    arquivodb.skipBytes(tamanho);
                 }
                 //pos = arquivodb.getFilePointer() + tamanho + 4;// se a conta foi apagada ou o id nao foi encontrado move para a proxima lapide do proximo registro (o + 4 para pular os 4 bytes do id)
             } while (id !=ultimaId && id !=jogador.Id); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada 
@@ -396,9 +403,7 @@ public class Main {
                     arquivodb.skipBytes(tamanho);
                 }
                 if(jogadoresMesmoIdDeletados == 2) break;
-                if(lapide == ' ' && idAtual == jogador.Id){
-                    break;
-                }
+                if(lapide == ' ' && idAtual == jogador.Id) break;
             } while (idAtual !=ultimaId && idAtual !=jogador.Id || (jogadoresMesmoIdDeletados > 0)); // repete para cada registro ate chegar no ultimo ou ate chegar na id desejada    
             if(lapide == '*' && idAtual == jogador.Id){
                 System.out.println("Jogador ja foi deletado");
