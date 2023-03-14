@@ -5,7 +5,7 @@ import java.io.IOException;
 public class Jogador {
     public int Id;
     public int tamanhoRegistro;
-    public char lapide;
+    public byte lapide;
     public String KnownAs;
     public String FullName;
     public int Overall;
@@ -25,12 +25,12 @@ public class Jogador {
         this.FullName = "";
         this.KnownAs = "";
         this.Id = -1;
-        this.lapide = ' ';
+        this.lapide = 0;
         this.tamanhoRegistro = 0;
     }
 
     public Jogador(int id,String KnownAs,String FullName,int Overall,int Potential,int Value,String PositionsPlayed,String BestPosition
-                ,String Nationality,String ImageLink,int tamanhoRegistro){
+                ,String Nationality,String ImageLink){
         this.ImageLink = ImageLink;
         this.BestPosition = BestPosition;
         this.PositionsPlayed = PositionsPlayed;
@@ -38,16 +38,30 @@ public class Jogador {
         this.Overall = Overall;
         this.FullName = FullName;
         this.KnownAs = KnownAs;
+        this.Nationality = Nationality;
         this.Id = id;
         this.tamanhoRegistro = tamanhoRegistro;
     }
+
+    public byte getLapide() {
+		return lapide;
+	}
+	public void setLapide(byte lapide) {
+		this.lapide = lapide;
+	}
+    public int getId() {
+		return Id;
+	}
+	public void setId(int id) {
+		this.Id = id;
+	}
 
     public byte[] toByteArray() throws IOException{
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(baos);
 
-            dos.writeChar(lapide);           
+            dos.writeByte(lapide);           
             dos.writeInt(Id);
             dos.writeInt(KnownAs.length());
             dos.writeUTF(KnownAs);           
@@ -71,7 +85,7 @@ public class Jogador {
 
     @Override
     public String toString(){//metodo para verificar os dados da conta
-      String mostrada = KnownAs + FullName + Overall + Potential + Value + PositionsPlayed + BestPosition + Nationality + ImageLink;
+      String mostrada = KnownAs  +FullName +","+ Overall +","+ Potential +","+ Value +","+ PositionsPlayed +"," + BestPosition +"," +Nationality +"," + ImageLink;
 
         return mostrada;
     }
