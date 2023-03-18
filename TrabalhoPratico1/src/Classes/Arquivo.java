@@ -38,6 +38,7 @@ public class Arquivo{
         jogador.setLapide(lapide);
         jogador.setId(id);
         jogador.setKnownAs(s = fileReader.readUTF());
+        System.out.println(s);
         jogador.setFullName(s = fileReader.readUTF());
         jogador.setOverall(fileReader.readByte());
         jogador.setValue(fileReader.readDouble());
@@ -45,9 +46,10 @@ public class Arquivo{
         jogador.setNacionality(s = fileReader.readUTF());
         jogador.setAge(fileReader.readByte());
         jogador.setClubName(s = fileReader.readUTF());
-        fileReader.seek(fileReader.length() - 4);
-        int i = fileReader.readInt();
-        s = fileReader.readLine();
+        //fileReader.seek(fileReader.length() - 4);
+        int tamanho = 0;
+        System.out.println(tamanho = fileReader.readInt());
+        jogador.setJoinedOn(s = fileReader.readUTF());
 
 
         return jogador;
@@ -194,8 +196,10 @@ public class Arquivo{
                     System.out.println("A opção escolhida não é válida");
             }
             
-            sc.close();
+            //sc.close();
 
+            jogador.setId(id);
+            jogador.setLapide(true);
             byte[] ba = jogador.toByteArray();
             fileReader.seek(posicao);
 
@@ -203,11 +207,11 @@ public class Arquivo{
             if(ba.length <= tamanhoJogador){
                 fileReader.write(ba);
             }else{
+                byte[] jogadorba = jogador.toByteArray();              
                 fileReader.writeBoolean(false);
-
                 fileReader.seek(fileReader.length());
-                fileReader.writeInt(ba.length);
-                fileReader.write(ba);
+                fileReader.writeInt(jogadorba.length);
+                fileReader.write(jogadorba);
             }
         }
         System.out.println("Não foi possível encontrar Jogador, seu Jogador foi deletado ou não existe!! Favor verificar seus dados");
