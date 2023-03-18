@@ -156,13 +156,18 @@ class Jogador{
 
         dos.writeBoolean(lapide);
         dos.writeInt(id);
+        dos.writeInt(knownAs.length());
         dos.writeUTF(knownAs);
+        dos.writeInt(fullName.length());
         dos.writeUTF(fullName);
         dos.writeByte(overall);
         dos.writeDouble(value);
+        dos.writeInt(bestPosition.length());
         dos.writeUTF(bestPosition);
+        dos.writeInt(nacionality.length());
         dos.writeUTF(nacionality);
         dos.writeByte(age);
+        dos.writeInt(clubName.length());
         dos.writeUTF(clubName);
         dos.writeInt(dateToString(joinedOn).length());
         dos.writeUTF(dateToString(joinedOn));

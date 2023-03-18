@@ -34,21 +34,25 @@ public class Arquivo{
         Jogador jogador = new Jogador();
         String s = "";
         Date date = jogador.getJoinedOn();
+        int tamanhoString = 0;
 
         jogador.setLapide(lapide);
         jogador.setId(id);
+        tamanhoString = fileReader.readInt();
         jogador.setKnownAs(s = fileReader.readUTF());
         System.out.println(s);
+        tamanhoString = fileReader.readInt();
         jogador.setFullName(s = fileReader.readUTF());
         jogador.setOverall(fileReader.readByte());
         jogador.setValue(fileReader.readDouble());
+        tamanhoString = fileReader.readInt();
         jogador.setBestPosition(s = fileReader.readUTF());
+        tamanhoString = fileReader.readInt();
         jogador.setNacionality(s = fileReader.readUTF());
         jogador.setAge(fileReader.readByte());
+        tamanhoString = fileReader.readInt();
         jogador.setClubName(s = fileReader.readUTF());
-        //fileReader.seek(fileReader.length() - 4);
-        int tamanho = 0;
-        System.out.println(tamanho = fileReader.readInt());
+        System.out.println(tamanhoString = fileReader.readInt());
         jogador.setJoinedOn(s = fileReader.readUTF());
 
 
