@@ -4,9 +4,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
-
-class Jogador{
+public class Jogador{
     private boolean lapide;
     private int id;
     private String knownAs;
@@ -34,7 +32,7 @@ class Jogador{
         //this.joinedOn = null;
     }
 
-    public Jogador(/*boolean lapide,*/ int id, String knownAs, String fullName, byte overall, double value, String bestPosition, String nacionality, byte age, String clubName/*, Date joinedOn*/){
+    public Jogador(/*boolean lapide,*/ int id, String knownAs, String fullName, byte overall, double value, String bestPosition, String nacionality, byte age, String clubName, String joinedOn) throws Exception{
         //this.lapide = lapide;
         this.id = id;
         this.knownAs = knownAs;
@@ -45,7 +43,7 @@ class Jogador{
         this.nacionality = nacionality;
         this.age = age;
         this.clubName = clubName;
-        this.joinedOn = joinedOn;
+        //this.joinedOn = stringToDate(joinedOn); 
     }
 
     public int getId(){
@@ -174,21 +172,5 @@ class Jogador{
 
 
         return out.toByteArray();
-    }
-
-    public void fromByteArray(byte[] out) throws IOException{
-        ByteArrayInputStream input = new ByteArrayInputStream(out);
-        DataInputStream dis = new DataInputStream(input);
-
-        lapide = dis.readBoolean();
-        id = dis.readInt();
-        knownAs = dis.readUTF();
-        fullName = dis.readUTF();
-        overall = dis.readByte();
-        value = dis.readDouble();
-        bestPosition = dis.readUTF();
-        nacionality = dis.readUTF();
-        age = dis.readByte();
-        clubName = dis.readUTF();
     }
 }

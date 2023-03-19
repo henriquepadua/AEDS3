@@ -19,16 +19,46 @@ public class Arquivo{
 
     public Arquivo(){}
 
-    public static void escreverJogador(Jogador jogador)throws IOException{
-        byte[] ba = jogador.toByteArray();
-        fileReader.seek(0);
-        fileReader.writeInt(jogador.getId());
+    // public static void escreverJogador(Jogador jogador)throws IOException{
+    //     byte[] ba = jogador.toByteArray();
+    //     fileReader.seek(0);
+    //     fileReader.writeInt(jogador.getId());
 
-        fileReader.seek(fileReader.length());
-        fileReader.writeInt(ba.length);
-        fileReader.write(ba);
+    //     fileReader.seek(fileReader.length());
+    //     fileReader.writeInt(ba.length);
+    //     fileReader.write(ba);
 
-    }
+    //}
+
+    public static void imprimeArquivo (long comeco) { // imprime as ids de um vo
+		int ultimaId;
+		int tamRegAtual;
+		long pos0;
+		int idAtual;
+		
+		try {
+			fileReader.seek(comeco);
+			ultimaId = fileReader.readInt();
+			idAtual = -1;
+			System.out.print("| ");
+			while(idAtual != ultimaId) { // varre o fileReaderuivo e imprime as ids
+				tamRegAtual = fileReader.readInt();
+				pos0 = fileReader.getFilePointer();
+				if(fileReader.readBoolean() != false) {
+					idAtual = fileReader.readInt();
+					System.out.print(idAtual + ", ");
+				} else {
+					System.out.print("*, ");
+				}
+				fileReader.seek(pos0);
+				fileReader.skipBytes(tamRegAtual);
+				System.out.print(tamRegAtual + "B | "); // teste
+			}
+			System.out.println("");
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
     public static Jogador leJogador(int tamanhoArquivo, int id, boolean lapide) throws Exception{
         Jogador jogador = new Jogador();

@@ -3,9 +3,11 @@ package Classes;
 import java.io.*;
 import java.util.Scanner;
 
+import Ordenacao.Ordenacao;
+
 public class Menu{
 
-    public void exibeMenu() throws IOException{
+    public void exibeMenu() throws Exception{
         Scanner sc = new Scanner(System.in);
         Arquivo arquivo = new Arquivo();
         int opcao, id = 0;;
@@ -18,7 +20,8 @@ public class Menu{
             System.out.println("2) Pesquisar Jogador");
             System.out.println("3) Alterar Jogador");
             System.out.println("4) Deletar Jogador");
-            System.out.println("5) Sair");
+            System.out.println("5) Intercalação balanceada comum");
+            System.out.println("6) Sair");
             Jogador jogador = new Jogador();
             opcao = sc.nextInt();
 
@@ -48,6 +51,10 @@ public class Menu{
                     break;
 
                 case 5:
+                    Ordenacao.intercalacaoBalanceada2(0);
+                    break;
+
+                case 6:
                     sair = true;
                     System.out.println("Saindo...");
                     sc.close();
