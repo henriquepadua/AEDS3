@@ -159,7 +159,7 @@ public class Arquivo{
     }
     
 
-    public void create(Jogador jogador) throws IOException{ 
+    public static void create(Jogador jogador) throws IOException{ 
 
         //fileReader = new RandomAccessFile("jogador.db", "rw");
         fileReader.seek(0);
@@ -182,6 +182,34 @@ public class Arquivo{
         fileReader.writeInt(ba.length);
         fileReader.write(ba);     
 
+    }
+
+    public static void criarJogador(Jogador jogador) throws Exception{
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o nome: ");
+        jogador.setKnownAs(sc.nextLine());
+                    
+        System.out.println("Digite o Overall: ");
+        jogador.setOverall(sc.nextByte());
+        
+        System.out.println("Digite o valor: ");
+        jogador.setValue(sc.nextDouble());
+        
+        System.out.println("Digite a posição: ");
+        jogador.setBestPosition(sc.next());
+        
+        System.out.println("Digite a nacionalidade: ");
+        jogador.setNacionality(sc.next());
+        
+        System.out.println("Digite a idade: ");
+        jogador.setAge(sc.nextByte());
+        
+        System.out.println("Digite o clube(SIGLA): ");
+        jogador.setClubName(sc.next());
+
+        System.out.println("Digite o ano: ");
+        jogador.setJoinedOn(sc.next());
+        create(jogador);
     }
 
     	

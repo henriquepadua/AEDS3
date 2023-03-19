@@ -27,7 +27,7 @@ public class Menu{
 
             switch(opcao) { // trata as opcoes
                 case 1:
-                    arquivo.create(jogador);
+                    Arquivo.criarJogador(jogador);
                     break;
                 case 2:
                     System.out.println("Digite o id que deseja pesquisar: ");
