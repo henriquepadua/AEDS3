@@ -19,17 +19,6 @@ public class Arquivo{
 
     public Arquivo(){}
 
-    // public static void escreverJogador(Jogador jogador)throws IOException{
-    //     byte[] ba = jogador.toByteArray();
-    //     fileReader.seek(0);
-    //     fileReader.writeInt(jogador.getId());
-
-    //     fileReader.seek(fileReader.length());
-    //     fileReader.writeInt(ba.length);
-    //     fileReader.write(ba);
-
-    //}
-
     public static void imprimeArquivo (long comeco) { // imprime as ids de um vo
 		int ultimaId;
 		int tamRegAtual;
