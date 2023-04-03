@@ -78,4 +78,57 @@ public class ListaInvertida {
             return false;
     }
 
+    /*
+     * Função para procurar a posicao no arquivo que esta livre para inserir o indice
+     * @ param palavra -> palavra que foi repetida
+     * @ param arquivo -> arquivo que tem que ser lido
+     * @return -> a posicao do arquivo livre
+     */
+    public long posIndiceLivre(String palavra,String arquivo){
+        try{
+            arq = new RandomAccessFile(arquivo, "rw");
+
+            arq.seek(0);
+            long pos = arq.getFilePointer();
+            String palavra_arq;
+
+            while(arq.getFilePointer() < arq.length()){
+                palavra_arq = arq.readUTF();
+
+                if(palavra.compareTo(palavra_arq) == 0){
+                    //Pega a posição antes de ler para se caso o valor seja == a - 1 retornar a posição correta livre
+                    pos = arq.getFilePointer();
+                    if(arq.readByte() == -1){
+                        return pos;
+                    }
+
+                    pos = arq.getFilePointer();
+                    if(arq.readByte() == -1){
+                        return pos;
+                    }
+
+                    pos = arq.getFilePointer();
+                    if(arq.readByte() == -1){
+                        return pos;
+                    }
+
+                    pos = arq.getFilePointer();
+                    if(arq.readByte() == -1){
+                        return pos;
+                    }
+
+                    pos = arq.getFilePointer();
+                    if(arq.readLong() == -1){
+                        arq.seek(pos);                   // vai para a ultima posicao livre registrada 
+                        arq.writeLong(arq.length());     // escreve a ultima posicao do arquivo como se fosse um ponteiro para a continuacao do array 
+                        arq.seek(arq.length());          // vai para a ultima posicao
+                        return arq.getFilePointer();     // retorna a ultima posicao do arquivo para criar o objeto apontado
+                    }
+                }
+            }
+        }catch(Exception e){
+            e.printStrackTrace();
+        }
+        return -1;
+    }
 }
