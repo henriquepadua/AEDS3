@@ -248,6 +248,26 @@ public class ListaInvertida {
     }
 
     /*
+     * Funcao tem a funcao de deletar os indices do arquivo e atualizar conforme as mudanças no arquivo original
+     * @param palavra -> nova palavra a ser atualizada
+     * @param id -> id a ser deletado e/ou inserido
+     * @param arquivo -> arquivo a ser lido
+     * @param isDelete -> boolean para saber das mudanças que devem ser feitas
+     */
+    public void updateLista(String palavra,byte id,String arquivo,boolean isDelete){
+        try{
+            //Pega a posicao que precisa ser deletada e deleta do arquivo
+            DeleteAllIdForList(id, arquivo);
+
+            if(isDelete == false){
+                createArqLista(palavra, id, arquivo);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /*
      * Função necessaria para confirmar se o id esta presente na lista
      * @param ids -> lista de ids a ser percorrida
      * @param id -> id a ser encontrado ou nao na lista

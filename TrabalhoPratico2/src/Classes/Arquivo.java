@@ -9,7 +9,8 @@ public class Arquivo{
     public static RandomAccessFile fileReader;
     private static long posicao;
     final int cabecalho = 4;
-    
+
+    private static ListaInvertida listaInvertida = new ListaInvertida();
 
     public Arquivo(String arquivo)throws IOException{
         this.arquivo = new File(arquivo);
@@ -179,7 +180,11 @@ public class Arquivo{
                
         fileReader.writeInt(ba.length);
         fileReader.write(ba);     
+        //src/Dados/ListaInvertidaNome.db
 
+        String idString = jogador.getId() + "";
+				listaInvertida.createArqLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db");
+				listaInvertida.createArqLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidasetNacionality.db");
     }
 
     public static void criarJogador(Jogador jogador) throws Exception{
@@ -273,8 +278,12 @@ public class Arquivo{
                 fileReader.writeInt(jogadorba.length);
                 fileReader.write(jogadorba);
             }
+            String idString = jogador.getId() + "";
+            listaInvertida.updateLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db",false);
+            listaInvertida.updateLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidasetNacionality.db",false);
         }
-        System.out.println("Não foi possível encontrar Jogador, seu Jogador foi deletado ou não existe!! Favor verificar seus dados");
+
+        //System.out.println("Não foi possível encontrar Jogador, seu Jogador foi deletado ou não existe!! Favor verificar seus dados");
     }
 
     public void delete(int id) throws IOException{ //metodo para deletar conta
@@ -306,8 +315,46 @@ public class Arquivo{
                     fileReader.skipBytes(tamanhoJogador - 1);
                 }
             }
+
+            String idString = id + "";
+            listaInvertida.DeleteAllIdForList(Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db"); // remove o registro da lista invertida
+			listaInvertida.DeleteAllIdForList(Byte.parseByte(idString), "src/Dados/ListaInvertidaNationality.db"); // remove o registro da lista invertida
         } catch (Exception e){
             e.printStackTrace();
         }   
     }
+
+    public static void buscaListaInvertida(Scanner sc) {
+		// pergunta se o usuario quer nome ou cidade
+		System.out.println("\n=== BUSCAR IDS POR LISTA INVERTIDA ===\n");
+		System.out.println("Você quer buscar por KnownAs ou Nationality? 1) KnownAs - 2) Nationality");
+		int tipo = sc.nextInt();
+		sc.nextLine();
+		
+		if (tipo == 1) { // se for por nome
+			// pede o nome desejado ao usuario
+			System.out.println("\nDigite o nome desejado:");
+			String KnownAs = sc.nextLine();
+			
+			// chama a funcao de busca passando o nome desejado e o arquivo correto
+			listaInvertida.searchList(KnownAs, "src/Dados/ListaInvertidaKnownAs.db");
+			
+		} else if (tipo == 2) { // se for por cidade
+			// pede a cidade desejada ao usuario
+			System.out.println("\nDigite a Nationality desejada:");
+			String Nationality = sc.nextLine();
+			
+			// chama a funcao de busca passando a cidade desejada e o arquivo correto
+			listaInvertida.searchList(Nationality, "src/Dados/ListaInvertidaNationality.db");
+		} else { // se digitou invalido
+			System.out.println("\nOpção inválida. Aperte enter para continuar.\n");
+			sc.nextLine();
+			return;
+		}
+		
+		System.out.println("\nAperte enter para continuar.\n");
+		sc.nextLine();
+		
+		return;
+	}
 }

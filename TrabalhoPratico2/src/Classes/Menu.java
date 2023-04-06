@@ -20,7 +20,8 @@ public class Menu{
             System.out.println("3) Alterar Jogador");
             System.out.println("4) Deletar Jogador");
             System.out.println("5) Intercalação balanceada comum");
-            System.out.println("6) Sair");
+            System.out.println("6) Buscar IDs por lista invertida");
+            System.out.println("7) Sair");
             Jogador jogador = new Jogador();
             opcao = sc.nextInt();
 
@@ -52,6 +53,9 @@ public class Menu{
                     Ordenacao.intercalacaoBalanceada2(0);
                     break;
                 case 6:
+                    Arquivo.buscaListaInvertida(sc);
+                    break;
+                case 7:
                     sair = true;
                     System.out.println("Saindo...");
                     sc.close();
