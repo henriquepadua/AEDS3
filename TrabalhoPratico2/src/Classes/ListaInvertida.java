@@ -127,8 +127,237 @@ public class ListaInvertida {
                 }
             }
         }catch(Exception e){
-            e.printStrackTrace();
+            e.printStackTrace();
         }
         return -1;
+    }
+
+    /**
+     * Cria a lista invertida do nome e cidade do time, quando ele existe faz um ponteiro para a proxima localizacao da continuacao, pois
+     * ele so tem tamanho 5. Caso ele nao exista ele cria um normal de tamanho 5 na ultima posicao do arquivo
+     * @param nome -> nome ou cidade do time inteiro a ser inserido na lista
+     * @param id -> id do time a ser inserido na lista
+     */
+    public void createArqLista(String nome,byte id,String arquivo){
+        String palavras[] = new String[contarNumeroPalavras(nome)];
+        palavras = nome.split(" ");
+
+        try{
+            arq = new RandomAccessFile(arquivo,"rw");
+
+            for(int i = 0; i < palavras.length; i++){
+                if(contemPalavra(palavras[i],arquivo) == true){
+                    long posAvaliable = posIndiceLivre(palavras[i], arquivo);
+
+                    if(posAvaliable != arq.length())
+                    {
+                        arq.seek(posAvaliable);
+                        arq.writeByte(id);
+                    }
+                    else
+                    //Temos que criar a mesma palavras novamente com o id desejado
+                    {
+                    arq.seek(posAvaliable);
+                    arq.writeUTF(palavras[i]);
+                    arq.writeByte(id);
+                    arq.writeByte(-1);
+                    arq.writeByte(-1);
+                    arq.writeByte(-1);
+                    arq.writeByte(-1);
+                    arq.writeByte(-1);
+                    }
+                }
+                else{
+                    arq.seek(arq.length());
+                    arq.writeUTF(palavras[i]);
+                    arq.writeByte(id);
+                }
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void showListaInvertida(){
+        try{
+            arq = new RandomAccessFile(arqListaInvertidaNome, "rw");
+
+            while(arq.getFilePointer() < arq.length()){
+                System.out.println(arq.readUTF());
+                System.out.println(arq.readByte());
+                System.out.println(arq.readByte());
+                System.out.println(arq.readByte());
+                System.out.println(arq.readByte());
+                System.out.println(arq.readByte());
+                System.out.println(arq.readLong());
+                System.out.println("------------------------");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * Remover do arquivo da lista todas as palavras relacionadas ao id
+     * @param id -> id que deve ser deletado
+     */
+    public void DeleteAllIdForList(byte id,String arquivo){
+        try{
+            arq = new RandomAccessFile(arquivo, "rw");
+
+            long pos;
+
+            while(arq.getFilePointer() < arq.length()){
+                arq.readUTF(); // ler a palavra
+
+                pos = arq.getFilePointer();
+                if(arq.readByte() == id){
+                    arq.seek(pos);
+                    arq.writeByte(-1);
+                }
+
+                pos = arq.getFilePointer();
+                if(arq.readByte() == id){
+                    arq.seek(pos);
+                    arq.writeByte(-1);
+                }
+
+                pos = arq.getFilePointer();
+                if(arq.readByte() == id){
+                    arq.seek(pos);
+                    arq.writeByte(-1);
+                }
+
+                pos = arq.getFilePointer();
+                if(arq.readByte() == id){
+                    arq.seek(pos);
+                    arq.writeByte(-1);
+                }
+
+                pos = arq.getFilePointer();
+                if(arq.readByte() == id){
+                    arq.seek(pos);
+                    arq.writeByte(-1);
+                }
+
+                arq.readLong();
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * Função necessaria para confirmar se o id esta presente na lista
+     * @param ids -> lista de ids a ser percorrida
+     * @param id -> id a ser encontrado ou nao na lista
+     * @return -> true se achar o id e false se nao a char o id na lista
+     */
+    public boolean idExistsInArray(ArrayList<Byte> ids,byte id)
+    {
+        for(Byte idList : ids){
+            if(idList == id)
+            {
+                return true;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * Funcao busca e printa os ids disponiveis para cada palavra inserida pelo usuario
+     * @param palavra -> palavra que deve ser buscada no arquivo da lista (cada uma)
+     * @param arquivo -> arquivo de busca
+     */
+    public void searchList(String palavra,String arquivo){
+        String palavras[] = new String[contarNumeroPalavras(palavra)];
+        palavras = palavra.split(" ");
+
+        try{
+            arq = new RandomAccessFile(arquivo, "rw");
+            String palavras_arq;
+            byte id;
+            long pos;
+            ArrayList<Byte> ids = new ArrayList<>();
+
+            //for para buscar por cada palavra no arquivo
+            for(int i = 0; i < palavras.length; i++){
+                //while para navegar dentro do arquivo tentando buscar a palavra
+                arq.seek(0);
+                while(arq.getFilePointer() < arq.length()){
+                    palavras_arq = arq.readUTF();
+
+                    if(palavras[i].compareTo(palavras_arq) == 0){
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                            id = arq.readByte();
+                            if(idExistsInArray(ids,id) == false){
+                                ids.add(id);
+                            }
+                        }
+
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                            id = arq.readByte();
+                            if(idExistsInArray(ids, id) == false){
+                                ids.add(id);
+                            }
+                        }
+
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                            id = arq.readByte();
+                            if(idExistsInArray(ids, id) == false){
+                                ids.add(id);
+                            }
+                        }
+
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                            id = arq.readByte();
+                            if(idExistsInArray(ids, id) == false){
+                                ids.add(id);
+                            }
+                        }
+
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                            id = arq.readByte();
+                            if(idExistsInArray(ids, id) == false){
+                                ids.add(id);
+                            }
+                        }
+
+                        pos = arq.getFilePointer();
+                        if(arq.readByte() != -1){
+                            arq.seek(pos);
+                        }
+                        else{
+                            arq.readByte();
+                            arq.readByte();
+                            arq.readByte();
+                            arq.readByte();
+                            arq.readByte();
+                            arq.readLong();
+                        }
+                    }
+                }
+
+                System.out.println("\n Os ID's relacionados à palavra digitada são: ");;
+                System.out.println(ids);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
