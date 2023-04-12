@@ -184,7 +184,7 @@ public class Arquivo{
 
         String idString = jogador.getId() + "";
 				listaInvertida.createArqLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db");
-				listaInvertida.createArqLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidasetNacionality.db");
+				listaInvertida.createArqLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidaNacionality.db");
     }
 
     public static void criarJogador(Jogador jogador) throws Exception{
@@ -280,7 +280,7 @@ public class Arquivo{
             }
             String idString = jogador.getId() + "";
             listaInvertida.updateLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db",false);
-            listaInvertida.updateLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidasetNacionality.db",false);
+            listaInvertida.updateLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidaNationality.db",false);
         }
 
         //System.out.println("Não foi possível encontrar Jogador, seu Jogador foi deletado ou não existe!! Favor verificar seus dados");
@@ -318,7 +318,7 @@ public class Arquivo{
 
             String idString = id + "";
             listaInvertida.DeleteAllIdForList(Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db"); // remove o registro da lista invertida
-			listaInvertida.DeleteAllIdForList(Byte.parseByte(idString), "src/Dados/ListaInvertidaNationality.db"); // remove o registro da lista invertida
+			listaInvertida.DeleteAllIdForList(Byte.parseByte(idString), "src/Dados/ListaInvertidasetNationality.db"); // remove o registro da lista invertida
         } catch (Exception e){
             e.printStackTrace();
         }   

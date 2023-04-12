@@ -7,8 +7,8 @@ import java.io.*;
 
 public class ListaInvertida {
     private RandomAccessFile arq;
-    private final String arqListaInvertidaNome = "src/Dados/ListaInvertidaNome.db";
-    private final String arqListaInvertidaCidade = "src/Dados/ListaInvertidaCidade.db";
+    private final String arqListaInvertidaNome = "src/Dados/ListaInvertidaKnownAs.db";
+    private final String arqListaInvertidaCidade = "src/Dados/ListaInvertidaNationality.db";
 
     public ListaInvertida(){
         try{
@@ -133,9 +133,9 @@ public class ListaInvertida {
     }
 
     /**
-     * Cria a lista invertida do nome e cidade do time, quando ele existe faz um ponteiro para a proxima localizacao da continuacao, pois
+     * Cria a lista invertida do apelido e cidade do time, quando ele existe faz um ponteiro para a proxima localizacao da continuacao, pois
      * ele so tem tamanho 5. Caso ele nao exista ele cria um normal de tamanho 5 na ultima posicao do arquivo
-     * @param nome -> nome ou cidade do time inteiro a ser inserido na lista
+     * @param nome -> apelido ou cidade do time inteiro a ser inserido na lista
      * @param id -> id do time a ser inserido na lista
      */
     public void createArqLista(String nome,byte id,String arquivo){
@@ -320,7 +320,7 @@ public class ListaInvertida {
                                 ids.add(id);
                             }
                         }
-
+                        /*
                         pos = arq.getFilePointer();
                         if(arq.readByte() != -1){
                             arq.seek(pos);
@@ -368,10 +368,10 @@ public class ListaInvertida {
                             arq.readByte();
                             arq.readByte();
                             arq.readLong();
-                        }
+                        }*/
                     }
                 }
-
+ 
                 System.out.println("\n Os ID's relacionados à palavra digitada são: ");;
                 System.out.println(ids);
 
