@@ -40,7 +40,7 @@ public class ListaInvertida {
         int qnt_palavras = 0;
 
         for(int i = 0;i < nome.length(); i++){
-            if(nome.charAt(i) == ' '){
+             if(nome.charAt(i) == ' '){
                 qnt_palavras++;
             }
         }
@@ -328,56 +328,6 @@ public class ListaInvertida {
                         }
                     }
                     else{id = arq.readByte();}
-                    
-                        /*
-                        pos = arq.getFilePointer();
-                        if(arq.readByte() != -1){
-                            arq.seek(pos);
-                            id = arq.readByte();
-                            if(idExistsInArray(ids, id) == false){
-                                ids.add(id);
-                            }
-                        }
-
-                        pos = arq.getFilePointer();
-                        if(arq.readByte() != -1){
-                            arq.seek(pos);
-                            id = arq.readByte();
-                            if(idExistsInArray(ids, id) == false){
-                                ids.add(id);
-                            }
-                        }
-
-                        pos = arq.getFilePointer();
-                        if(arq.readByte() != -1){
-                            arq.seek(pos);
-                            id = arq.readByte();
-                            if(idExistsInArray(ids, id) == false){
-                                ids.add(id);
-                            }
-                        }
-
-                        pos = arq.getFilePointer();
-                        if(arq.readByte() != -1){
-                            arq.seek(pos);
-                            id = arq.readByte();
-                            if(idExistsInArray(ids, id) == false){
-                                ids.add(id);
-                            }
-                        }
-
-                        pos = arq.getFilePointer();
-                        if(arq.readByte() != -1){
-                            arq.seek(pos);
-                        }
-                        else{
-                            arq.readByte();
-                            arq.readByte();
-                            arq.readByte();
-                            arq.readByte();
-                            arq.readByte();
-                            arq.readLong();
-                        }*/
                     }
                 }
  

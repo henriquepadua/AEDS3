@@ -182,6 +182,9 @@ public class Arquivo{
         fileReader.write(ba);     
         //src/Dados/ListaInvertidaNome.db
 
+        //adiciona o registro ao arquivo hash
+        //adicionaHash(comeco,novaConta,endFinal);
+
         String idString = jogador.getId() + "";
 				listaInvertida.createArqLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db");
 				listaInvertida.createArqLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidaNationality.db");
@@ -325,22 +328,22 @@ public class Arquivo{
     }
 
     public static void buscaListaInvertida(Scanner sc) {
-		// pergunta se o usuario quer nome ou cidade
+		// pergunta se o usuario quer apelido ou nacionalidade
 		System.out.println("\n=== BUSCAR IDS POR LISTA INVERTIDA ===\n");
 		System.out.println("Você quer buscar por KnownAs ou Nationality? 1) KnownAs - 2) Nationality");
 		int tipo = sc.nextInt();
 		sc.nextLine();
 		
-		if (tipo == 1) { // se for por nome
-			// pede o nome desejado ao usuario
-			System.out.println("\nDigite o nome desejado:");
+		if (tipo == 1) { // se for por apelido
+			// pede o apelido desejado ao usuario
+			System.out.println("\nDigite o apelido desejado:");
 			String KnownAs = sc.nextLine();
 			
-			// chama a funcao de busca passando o nome desejado e o arquivo correto
+			// chama a funcao de busca passando o apelido desejado e o arquivo correto
 			listaInvertida.searchList(KnownAs, "src/Dados/ListaInvertidaKnownAs.db");
 			
-		} else if (tipo == 2) { // se for por cidade
-			// pede a cidade desejada ao usuario
+		} else if (tipo == 2) { // se for por Nacionalidade
+			// pede a Nacionalidade desejada ao usuario
 			System.out.println("\nDigite a Nationality desejada:");
 			String Nationality = sc.nextLine();
 			
@@ -357,4 +360,55 @@ public class Arquivo{
 		
 		return;
 	}
+
+    public static void adicionaHash(long comeco,Jogador jogador,long enderecoArq){
+        int ultimaId;
+        int idAtual;
+        Jogador jogadortemp;
+        int tamRegAtual;
+        long pos0,pos1,posBucketNovo;
+        long endDir;
+        int profGlobal;
+        int profLocal;
+        int numRegs;
+        char lapide;
+        int ultimoBucket;
+        double tamDir;
+
+        try{
+            //Abre o arquivo de indice
+            RandomAccessFile arqHash = new RandomAccessFile("src/dados/hash.db", "rw");
+
+            //Abre o arquivo de diretorio
+            RandomAccessFile arqDir = new RandomAccessFile("src/dados/diretorio.db","rw");
+
+            //salva a profundidade global
+            arqHash.seek(comeco);
+            profGlobal = arqHash.readInt();
+
+            idAtual = jogador.getId();
+            pos1 = enderecoArq;
+
+            // ve no diretorio em qual bucket vai cair
+            endDir = getEndDir(arqDir,comeco,idAtual);
+
+            arqHash.seek(endDir);
+            profLocal = arqHash.readInt();
+            numRegs = arqHash.readInt();
+
+            // se o bucket ja estiver cheio
+            if(numRegs == 4){
+
+                // se a profundidade local for menor que a mais profundidade global
+                if(profLocal < profGlobal){
+
+                    // aumenta a profundidade local
+                    profLocal += 1;
+                    arqHash.seek(endDir);
+                    arqHash.writeInt(profLocal);
+                }
+            }
+
+        }
+    }
 }
