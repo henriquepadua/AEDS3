@@ -309,7 +309,12 @@ public class ListaInvertida {
                 //while para navegar dentro do arquivo tentando buscar a palavra
                 arq.seek(0);
                 while(arq.getFilePointer() < arq.length()){
+                    long poss = arq.getFilePointer();
+                    System.out.println(poss + "-" + arq.length());
+
                     palavras_arq = arq.readUTF();
+                    
+                    System.out.println(palavras_arq);
 
                     if(palavras[i].compareTo(palavras_arq) == 0){
                         pos = arq.getFilePointer();
@@ -319,7 +324,11 @@ public class ListaInvertida {
                             if(idExistsInArray(ids,id) == false){
                                 ids.add(id);
                             }
+                            if(arq.getFilePointer() + 1 == arq.length()) break;
                         }
+                    }
+                    else{id = arq.readByte();}
+                    
                         /*
                         pos = arq.getFilePointer();
                         if(arq.readByte() != -1){
@@ -375,7 +384,6 @@ public class ListaInvertida {
                 System.out.println("\n Os ID's relacionados à palavra digitada são: ");;
                 System.out.println(ids);
 
-            }
         }catch (Exception e){
             e.printStackTrace();
         }

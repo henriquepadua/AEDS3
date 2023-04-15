@@ -185,7 +185,7 @@ public class Arquivo{
         String idString = jogador.getId() + "";
 				listaInvertida.createArqLista(jogador.getKnownAs(), Byte.parseByte(idString), "src/Dados/ListaInvertidaKnownAs.db");
 				listaInvertida.createArqLista(jogador.getNacionality(), Byte.parseByte(idString), "src/Dados/ListaInvertidaNationality.db");
-    }
+     }
 
     public static void criarJogador(Jogador jogador) throws Exception{
         Scanner sc = new Scanner(System.in);
