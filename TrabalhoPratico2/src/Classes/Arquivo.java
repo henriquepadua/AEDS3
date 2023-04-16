@@ -1,6 +1,7 @@
 package Classes;
 
 import java.io.*;
+import java.net.CacheRequest;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -361,54 +362,459 @@ public class Arquivo{
 		return;
 	}
 
-    public static void adicionaHash(long comeco,Jogador jogador,long enderecoArq){
-        int ultimaId;
-        int idAtual;
-        Jogador jogadortemp;
-        int tamRegAtual;
-        long pos0,pos1,posBucketNovo;
-        long endDir;
-        int profGlobal;
-        int profLocal;
-        int numRegs;
-        char lapide;
-        int ultimoBucket;
-        double tamDir;
+    public static Jogador leJogadorHash(RandomAccessFile arq, long comeco, long pos0) throws Exception{
+        Jogador jogador = new Jogador();
+        String s = "";
+        Date date = jogador.getJoinedOn();
+        int tamanhoString = 0;double value = 0;byte overall = 0;
+        int id = 0;
 
+        arq.readByte();
+		id = arq.readInt();
+        tamanhoString = fileReader.readInt();
+        jogador.setKnownAs(s = fileReader.readUTF());
+        tamanhoString = fileReader.readInt();
+        System.out.print(s);
+        jogador.setFullName(s = fileReader.readUTF());
+        System.out.print(","+s);
+        jogador.setOverall( overall = fileReader.readByte());
+        System.out.print(","+overall);
+        jogador.setValue(value = fileReader.readDouble());
+        System.out.print(","+ value);
+        tamanhoString = fileReader.readInt();
+        jogador.setBestPosition(s = fileReader.readUTF());
+        System.out.print(","+s);
+        tamanhoString = fileReader.readInt();
+        jogador.setNacionality(s = fileReader.readUTF());
+        System.out.print(","+s);
+        jogador.setAge(overall = fileReader.readByte());
+        System.out.println(","+overall);
+        tamanhoString = fileReader.readInt();
+        jogador.setClubName(s = fileReader.readUTF());
+        System.out.print(","+s);
+        tamanhoString = fileReader.readInt();
+        jogador.setJoinedOn(s = fileReader.readUTF());
+        System.out.println(","+s);
+
+
+        return jogador;
+    }
+
+    public static void criaHash(long comeco) throws Exception { // cria o arquivo de hash inicial
+		// abre o arquivo de indice hash
+		// limpa o arquivo de indice hash
+		// abre o arquivo de diretorio
+		// limpa o arquivo de diretorio
+		// inicializa os arquivos de indice e diretorio com p=1 e buckets vazios
+		// para cada registro no arquivo
+			// le o registro
+			// ve no diretorio em qual bucket vai cair
+			// acessa o bucket
+			// se o bucket ja estiver cheio
+				// se a profundidade local for menor que a profundidade global
+					// aumenta a profundidade local
+					// cria um bucket novo
+					// troca o ponteiro da segunda metade de % atual para o bucket novo ((numBucket >> Pl-1)%2)==1(segunda metade) && (bits da direita iguais)(numBucket%2^(p-1))==(idAtual%2^(p-1)) 
+					// rebalanceia o bucket atual com o seu segundo %
+					// insere o registro no bucket equivalente
+				// se a profundidade local for igual a profundidade global
+					// aumenta a profundidade local
+					// aumenta a profundidade global
+					// dobra o tamanho do diretorio
+					// copia os ponteiros antigos do diretorio para os campos novos
+					// cria um bucket novo
+					// troca o ponteiro do segundo registro de % atual para o bucket novo
+					// rebalanceia o bucket atual com o seu segundo %
+					// insere o registro no bucket equivalente
+			// se o bucket nao estiver cheio
+				// insere o registro no bucket
+		// end while
+		
+		try {
+			
+			int ultimaId;
+			int idAtual;
+			Jogador contaTemp;
+			int tamRegAtual;
+			long pos0, pos1, posBucketNovo;
+			long endDir;
+			int profGlobal;
+			int profLocal;
+			int numRegs;
+			byte lapide;
+			int ultimoBucket;
+			double tamDir;
+						
+			// abre o arquivo de indice hash
+			RandomAccessFile arqHash = new RandomAccessFile("src/dados/hash.db", "rw");
+			
+			// limpa o arquivo de indice hash
+			arqHash.setLength(0);
+			
+			// abre o arquivo de diretorio
+			RandomAccessFile arqDir = new RandomAccessFile("src/dados/diretorio.db", "rw");
+			
+			// limpa o arquivo de diretorio
+			arqDir.setLength(0);
+			
+			// inicializa os arquivos de indice e diretorio com p=1 e buckets vazios
+			arqDir.seek(comeco);
+			arqDir.writeInt(1); // profundidade global
+			profGlobal = 1;
+			arqHash.seek(comeco);
+			arqHash.writeInt(1); // numero ultimo bucket
+			for(int i=0; i<2; i++) {
+				arqDir.writeLong(arqHash.getFilePointer()); // escreve o endereco do bucket correspondente
+				arqHash.writeInt(1); // profundidade local
+				arqHash.writeInt(0); // numero de elementos
+				for(int j=0; j<4; j++) {
+					arqHash.writeInt(-1); // chave
+					arqHash.writeLong(-1); // endereco
+				}
+			}
+						
+			
+			// para cada registro no arquivo
+			fileReader.seek(comeco);
+			ultimaId = fileReader.readInt();
+			idAtual = -1;
+			while (idAtual != ultimaId) {
+				
+				// le o registro
+				pos1 = fileReader.getFilePointer(); // endereco antes do tamanho do registro, eh o que sera gravado no diretorio
+				tamRegAtual = fileReader.readInt();
+				pos0 = fileReader.getFilePointer();
+				lapide = fileReader.readByte();
+				fileReader.seek(pos0);
+				contaTemp = leJogadorHash(fileReader, comeco, pos0);
+				if(lapide != '*') {
+					idAtual = contaTemp.getId();
+					
+					// ve no diretorio em qual bucket vai cair
+					endDir = getEndDir(arqDir, comeco, idAtual);
+					
+					// acessa o bucket
+					arqHash.seek(endDir);
+					profLocal = arqHash.readInt();
+					numRegs = arqHash.readInt();
+					
+					// se o bucket ja estiver cheio
+					if(numRegs == 4) {
+						
+						// se a profundidade local for menor que a profundidade global
+						if(profLocal < profGlobal) {
+							
+							// aumenta a profundidade local
+							profLocal += 1;
+							arqHash.seek(endDir);
+							arqHash.writeInt(profLocal);
+							
+							// cria um bucket novo
+							arqHash.seek(comeco);
+							ultimoBucket = arqHash.readInt();
+							for(int i=0; i<=ultimoBucket; i++) { // pula todos os buckets existentes
+								arqHash.skipBytes(56);
+							}
+							posBucketNovo = arqHash.getFilePointer(); // endereco do bucket novo
+							arqHash.writeInt(profLocal);
+							arqHash.writeInt(0); // numero de registros
+							for(int j=0; j<4; j++) { // escreve valores -1
+								arqHash.writeInt(-1); // chave
+								arqHash.writeLong(-1); // endereco
+							}
+							
+							// troca o ponteiro da segunda metade de % atual para o bucket novo ((numBucket >> Pl-1)%2)==1(segunda metade) && (bits da direita iguais)(numBucket%2^(p-1))==(idAtual%2^(p-1))
+							arqDir.seek(comeco);
+							profGlobal = arqDir.readInt(); // profundidade global
+							tamDir = Math.pow(2, profGlobal);
+							for(int i=0; i<tamDir; i++) {
+								if(((i >> profLocal-1) % 2) == 1 && (i % Math.pow(2, (profGlobal-1))) == (idAtual % Math.pow(2, (profGlobal-1)))) { // se a id atual for parte da 2a metade das ids que pertencem ao grupo que contem ponteiros para o mesmo bucket 
+									arqDir.writeLong(posBucketNovo); // grava a posicao do novo bucket
+								}
+								else { // senao, pula para o proximo
+									arqDir.skipBytes(8);
+								}
+							}
+							
+							// rebalanceia o bucket atual com o seu segundo %
+								
+								// le os registros
+							int[] chave = new int [5];
+							long[] endereco = new long [5];
+							arqHash.seek(endDir);
+							arqHash.readInt(); // pula a profundidade
+							arqHash.readInt(); // pula o numero de elementos (eh 4)
+							for(int i=0; i<4; i++) {
+								chave[i] = arqHash.readInt();
+								endereco[i] = arqHash.readLong();
+							}
+								// define em qual posicao vai ficar
+							int novaPosicao = 4; // se for maior que todos a posicao eh a ultima
+							for(int i=0; i<4; i++) {
+								if(idAtual < chave[i]) {
+									novaPosicao = i; // se for menor que a chave[i] entao achou em qual posicao devera ficar
+									i = 4; // break
+								} else if(idAtual == chave[i]) {
+									System.out.println("Erro: ID duplicada");
+									return;
+								}
+							}
+							
+								// insere o registro e remaneja os existentes
+							for(int i=3; i>=novaPosicao; i--) {
+								chave[i+1] = chave[i];
+								endereco[i+1] = endereco[i];
+							}
+							chave[novaPosicao] = idAtual;
+							endereco[novaPosicao] = pos1;
+							
+							// insere os registros nos buckets equivalentes
+							long posPrimeiro, posSegundo;
+							arqHash.seek(endDir); // vai para a posicao do primeiro bucket
+							arqHash.readInt(); // pula a profundidade
+							posPrimeiro = arqHash.getFilePointer();
+							arqHash.writeInt(0); // numero de elementos vai para zero para ser aumentado depois
+							arqHash.seek(posBucketNovo); // vai para a posicao do segundo bucket
+							arqHash.readInt(); // pula a profundidade
+							posSegundo = arqHash.getFilePointer();
+							arqHash.writeInt(0); // numero de elementos vai para zero para ser aumentado depois
+							int numRegs2;
+							for(int i=0; i<5; i++) {
+								if(chave[i] % Math.pow(2, profLocal-1) == chave[i] % Math.pow(2, profLocal)) { // se a chave pertencer ao primeiro bucket, adiciona a chave ao primeiro bucket e aumenta o numero de elementos
+									arqHash.seek(posPrimeiro);
+									numRegs2 = arqHash.readInt();
+									arqHash.seek(posPrimeiro);
+									arqHash.writeInt(numRegs2 + 1); // aumenta o numero de elementos
+									arqHash.skipBytes(12 * numRegs2); // pula os registros que ja foram inseridos
+									arqHash.writeInt(chave[i]); // escreve a chave
+									arqHash.writeLong(endereco[i]); // escreve o endereco
+									
+								} else { // se a chave pertencer ao segundo bucket, adiciona a chave ao segundo bucket e aumenta o numero de elementos
+									arqHash.seek(posSegundo);
+									numRegs2 = arqHash.readInt();
+									arqHash.seek(posSegundo);
+									arqHash.writeInt(numRegs2 + 1); // aumenta o numero de elementos
+									arqHash.skipBytes(12 * numRegs2); // pula os registros que ja foram inseridos
+									arqHash.writeInt(chave[i]); // escreve a chave
+									arqHash.writeLong(endereco[i]); // escreve o endereco
+								}
+							}
+							
+							// aumenta o ultimoBucket
+							ultimoBucket += 1;
+							arqHash.seek(comeco);
+							arqHash.writeInt(ultimoBucket);
+						}
+						
+						// se a profundidade local for igual a profundidade global
+						else {
+							
+							// aumenta a profundidade local
+							profLocal += 1;
+							arqHash.seek(endDir);
+							arqHash.writeInt(profLocal);
+							
+							// aumenta a profundidade global
+							profGlobal += 1;
+							arqDir.seek(comeco);
+							arqDir.writeInt(profGlobal);
+							
+							// dobra o tamanho do diretorio
+							tamDir = Math.pow(2, profGlobal);
+							
+							// copia os ponteiros antigos do diretorio para os campos novos
+							long posMetade1 = arqDir.getFilePointer();
+							arqDir.skipBytes((int) ((tamDir/2) * 8));
+							long posMetade2 = arqDir.getFilePointer();
+							long endAtual;
+							for(int i=0; i<tamDir/2; i++) { // varre o arquivo de diretorio copiando os enderecos para a segunda metade
+								arqDir.seek(posMetade1);
+								endAtual = arqDir.readLong();
+								posMetade1 = arqDir.getFilePointer();
+								arqDir.seek(posMetade2);
+								arqDir.writeLong(endAtual);
+								posMetade2 = arqDir.getFilePointer();
+							}
+							
+							// cria um bucket novo
+							arqHash.seek(comeco);
+							ultimoBucket = arqHash.readInt();
+							for(int i=0; i<=ultimoBucket; i++) { // pula todos os buckets existentes
+								arqHash.skipBytes(56);
+							}
+							posBucketNovo = arqHash.getFilePointer(); // endereco do bucket novo
+							arqHash.writeInt(profLocal);
+							arqHash.writeInt(0); // numero de registros
+							for(int j=0; j<4; j++) { // escreve valores -1
+								arqHash.writeInt(-1); // chave
+								arqHash.writeLong(-1); // endereco
+							}
+							
+							// aumenta o ultimoBucket
+							ultimoBucket += 1;
+							arqHash.seek(comeco);
+							arqHash.writeInt(ultimoBucket);
+							
+							// troca o ponteiro do segundo registro de % atual para o bucket novo
+							arqDir.seek(comeco);
+							arqDir.readInt(); // pula a profundidade global
+							arqDir.skipBytes((int) ((idAtual % Math.pow(2, profGlobal-1)) + Math.pow(2, profGlobal-1)) * 8); // pula para o segundo registro de % atual
+							arqDir.writeLong(posBucketNovo);
+							
+							// rebalanceia o bucket atual com o seu segundo %
+							
+								// le os registros
+							int[] chave = new int [5];
+							long[] endereco = new long [5];
+							arqHash.seek(endDir);
+							arqHash.readInt(); // pula a profundidade
+							arqHash.readInt(); // pula o numero de elementos (eh 4)
+							for(int i=0; i<4; i++) {
+								chave[i] = arqHash.readInt();
+								endereco[i] = arqHash.readLong();
+							}
+								// define em qual posicao vai ficar
+							int novaPosicao = 4; // se for maior que todos a posicao eh a ultima
+							for(int i=0; i<4; i++) {
+								if(idAtual < chave[i]) {
+									novaPosicao = i; // se for menor que a chave[i] entao achou em qual posicao devera ficar
+									i = 4; // break
+								} else if(idAtual == chave[i]) {
+									System.out.println("Erro: ID duplicada");
+									return;
+								}
+							}
+							
+								// insere o registro e remaneja os existentes
+							for(int i=3; i>=novaPosicao; i--) {
+								chave[i+1] = chave[i];
+								endereco[i+1] = endereco[i];
+							}
+							chave[novaPosicao] = idAtual;
+							endereco[novaPosicao] = pos1;
+							
+							// insere os registros nos buckets equivalentes
+							long posPrimeiro, posSegundo;
+							arqHash.seek(endDir); // vai para a posicao do primeiro bucket
+							arqHash.readInt(); // pula a profundidade
+							posPrimeiro = arqHash.getFilePointer();
+							arqHash.writeInt(0); // numero de elementos vai para zero para ser aumentado depois
+							arqHash.seek(posBucketNovo); // vai para a posicao do segundo bucket
+							arqHash.readInt(); // pula a profundidade
+							posSegundo = arqHash.getFilePointer();
+							arqHash.writeInt(0); // numero de elementos vai para zero para ser aumentado depois
+							int numRegs2;
+							for(int i=0; i<5; i++) {
+								if(chave[i] % Math.pow(2, profLocal-1) == chave[i] % Math.pow(2, profLocal)) { // se a chave pertencer ao primeiro bucket, adiciona a chave ao primeiro bucket e aumenta o numero de elementos
+									arqHash.seek(posPrimeiro);
+									numRegs2 = arqHash.readInt();
+									arqHash.seek(posPrimeiro);
+									arqHash.writeInt(numRegs2 + 1); // aumenta o numero de elementos
+									arqHash.skipBytes(12 * numRegs2); // pula os registros que ja foram inseridos
+									arqHash.writeInt(chave[i]); // escreve a chave
+									arqHash.writeLong(endereco[i]); // escreve o endereco
+								} else { // se a chave pertencer ao segundo bucket, adiciona a chave ao segundo bucket e aumenta o numero de elementos
+									arqHash.seek(posSegundo);
+									numRegs2 = arqHash.readInt();
+									arqHash.seek(posSegundo);
+									arqHash.writeInt(numRegs2 + 1); // aumenta o numero de elementos
+									arqHash.skipBytes(12 * numRegs2); // pula os registros que ja foram inseridos
+									arqHash.writeInt(chave[i]); // escreve a chave
+									arqHash.writeLong(endereco[i]); // escreve o endereco
+								}
+							}
+						}
+					}
+					
+					// se o bucket nao estiver cheio
+					else {
+						
+						// insere o registro no bucket
+						
+							// le os registros
+						int[] chave = new int [4];
+						long[] endereco = new long [4];
+						for(int i=0; i<numRegs; i++) {
+							chave[i] = arqHash.readInt();
+							endereco[i] = arqHash.readLong();
+						}
+						
+							// define em qual posicao vai ficar
+						int novaPosicao = numRegs; // se for maior que todos a posicao eh a ultima
+						for(int i=0; i<numRegs; i++) {
+							if(idAtual < chave[i]) {
+								novaPosicao = i; // se for menor que a chave[i] entao achou em qual posicao devera ficar
+								i = numRegs; // break
+							} else if(idAtual == chave[i]) {
+								System.out.println("Erro: ID duplicada");
+								return;
+							}
+						}
+						
+							// insere o registro e remaneja os existentes
+						if(numRegs > 0) {
+							for(int i=numRegs-1; i>=novaPosicao; i--) {
+								chave[i+1] = chave[i];
+								endereco[i+1] = endereco[i];
+							}
+							chave[novaPosicao] = idAtual;
+							endereco[novaPosicao] = pos1;
+							numRegs += 1;
+						} else {
+							chave[0] = idAtual;
+							endereco[0] = pos1;
+							numRegs = 1;
+						}
+						
+							// aumenta o numero de elementos no bucket
+						arqHash.seek(endDir);
+						arqHash.readInt(); // profundidade local
+						arqHash.writeInt(numRegs);
+						
+							// grava o bucket novo
+						for(int i=0; i<numRegs; i++) {
+							arqHash.writeInt(chave[i]);
+							arqHash.writeLong(endereco[i]);
+						}
+					}
+				}
+			// end while
+			}
+				
+			// imprimeArqDir(arqDir, comeco);
+			// imprimeArqHash(arqHash, comeco);
+			// System.out.println("\nArquivo inicial de hash criado.\n\nAperte enter para continuar.");
+			// sc.nextLine();
+			arqHash.close();
+			arqDir.close();
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return;
+	}
+
+    public static long getEndDir(RandomAccessFile arqDir,long comeco,int idDesejada){//varre o arquivo de diretorio buscando o registro de id selecionado e retorna o endereco do bucket correspondente
+        long endDir = -1;
         try{
-            //Abre o arquivo de indice
-            RandomAccessFile arqHash = new RandomAccessFile("src/dados/hash.db", "rw");
-
-            //Abre o arquivo de diretorio
-            RandomAccessFile arqDir = new RandomAccessFile("src/dados/diretorio.db","rw");
-
-            //salva a profundidade global
-            arqHash.seek(comeco);
-            profGlobal = arqHash.readInt();
-
-            idAtual = jogador.getId();
-            pos1 = enderecoArq;
-
-            // ve no diretorio em qual bucket vai cair
-            endDir = getEndDir(arqDir,comeco,idAtual);
-
-            arqHash.seek(endDir);
-            profLocal = arqHash.readInt();
-            numRegs = arqHash.readInt();
-
-            // se o bucket ja estiver cheio
-            if(numRegs == 4){
-
-                // se a profundidade local for menor que a mais profundidade global
-                if(profLocal < profGlobal){
-
-                    // aumenta a profundidade local
-                    profLocal += 1;
-                    arqHash.seek(endDir);
-                    arqHash.writeInt(profLocal);
+            arqDir.seek(comeco);
+            int profGlobal = arqDir.readInt();
+            double tamDir = Math.pow(2,profGlobal);
+            // para cada valor no diretorio
+            for(int i=0; i<tamDir;i++){
+                //checa se eh o bucket da id desejada
+                if(i == idDesejada % tamDir){
+                    //salva o endereco do bucket
+                    endDir = arqDir.readLong();
+                }else{
+                    //pula para o proximo
+                    arqDir.readLong();
                 }
             }
-
+        } catch(IOException e){
+            System.out.println(e.getMessage());
         }
+        return endDir;
     }
 }

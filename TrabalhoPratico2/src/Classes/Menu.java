@@ -9,7 +9,7 @@ public class Menu{
     public void exibeMenu() throws Exception{
         Scanner sc = new Scanner(System.in);
         Arquivo arquivo = new Arquivo();
-        int opcao, id = 0;;
+        int opcao, id = 0;
         boolean sair = false;
 
         while(!sair){
@@ -21,7 +21,8 @@ public class Menu{
             System.out.println("4) Deletar Jogador");
             System.out.println("5) Intercalação balanceada comum");
             System.out.println("6) Buscar IDs por lista invertida");
-            System.out.println("7) Sair");
+            System.out.println("7) Criar arquivo de índice hash");
+            System.out.println("8) Sair");
             Jogador jogador = new Jogador();
             opcao = sc.nextInt();
 
@@ -56,6 +57,9 @@ public class Menu{
                     Arquivo.buscaListaInvertida(sc);
                     break;
                 case 7:
+                    Arquivo.criaHash(0);
+                    break;
+                case 9:
                     sair = true;
                     System.out.println("Saindo...");
                     sc.close();
