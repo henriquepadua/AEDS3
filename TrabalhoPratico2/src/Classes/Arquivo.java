@@ -371,6 +371,7 @@ public class Arquivo{
 
         arq.readByte();
 		id = arq.readInt();
+		jogador.setId(id);
         tamanhoString = fileReader.readInt();
         jogador.setKnownAs(s = fileReader.readUTF());
         tamanhoString = fileReader.readInt();
@@ -487,7 +488,7 @@ public class Arquivo{
 				lapide = fileReader.readByte();
 				fileReader.seek(pos0);
 				contaTemp = leJogadorHash(fileReader, comeco, pos0);
-				if(lapide != '*') {
+				if(lapide != 0) {
 					idAtual = contaTemp.getId();
 					
 					// ve no diretorio em qual bucket vai cair
