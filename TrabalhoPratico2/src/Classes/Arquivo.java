@@ -818,4 +818,92 @@ public class Arquivo{
         }
         return endDir;
     }
+
+	public static void buscaHash(long comeco) throws Exception {
+		try {
+			Scanner sc = new Scanner(System.in);
+			// abre os arquivos
+			// encontra o endereco do bucket no diretorio
+			// navega ate o bucket
+			// le o bucket
+			// encontra o registro desejado
+			// vai ate o endereco encontrado no arquivo de contas
+			// le o registro
+			// imprime o registro
+			
+			
+			// pede a id desejada para o usuario
+			System.out.println("\n=== BUSCAR UMA CONTA POR HASH ===\n");
+			System.out.println("Digite a ID da conta que quer exibir:");
+			int idConta = sc.nextInt();
+			sc.nextLine();
+			
+			// abre os arquivos
+			// abre o arquivo de indice hash
+			RandomAccessFile arqHash = new RandomAccessFile("src/dados/hash.db", "rw");
+			
+			// abre o arquivo de diretorio
+			RandomAccessFile arqDir = new RandomAccessFile("src/dados/diretorio.db", "rw");
+			
+			// encontra o endereco do bucket no diretorio
+			int profGlobal;
+			arqDir.seek(comeco);
+			profGlobal = arqDir.readInt();
+			int tamDir = (int) Math.pow(2, profGlobal);
+			arqDir.skipBytes((idConta % tamDir) * 8);
+			long endBucket = arqDir.readLong();
+			arqDir.close();
+			
+			// navega ate o bucket
+			arqHash.seek(endBucket);
+			
+			// le o bucket
+			arqHash.readInt(); // profundidade local
+			int n = arqHash.readInt(); // numero de elementos
+			if(n == 0) {
+				System.out.println("Erro: ID não encontrada. Bucket vazio");
+				arqHash.close();
+				return;
+			}
+			int[] chave = new int[n];
+			long[] endereco = new long[n];
+			for(int i=0; i<n; i++) {
+				chave[i] = arqHash.readInt(); // chave
+				endereco[i] = arqHash.readLong(); // endereco
+			}
+			
+			// encontra o registro desejado
+			int posReg = -1;
+			for(int i=0; i<n; i++) {
+				if(chave[i] == idConta) {
+					posReg = i;
+				}
+			}
+			if(posReg == -1) {
+				System.out.println("Erro: ID não encontrada");
+				arqHash.close();
+				return;
+			}
+			
+			// vai ate o endereco encontrado no arquivo de contas
+			fileReader.seek(endereco[posReg]);
+			long pos0 = fileReader.getFilePointer();
+			
+			// le o registro
+			fileReader.readInt(); // pula o tamanho do registro
+			Jogador conta = leJogadorHash(fileReader, comeco, pos0);
+			
+			// imprime o registro
+			System.out.println("\nEndereço do registro: " + pos0);
+			System.out.println(conta.toString());
+			System.out.println("\nAperte enter para continuar.");
+			sc.nextLine();
+						
+			arqHash.close();
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return;
+	}
 }

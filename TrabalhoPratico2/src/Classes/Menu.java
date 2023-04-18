@@ -22,7 +22,8 @@ public class Menu{
             System.out.println("5) Intercalação balanceada comum");
             System.out.println("6) Buscar IDs por lista invertida");
             System.out.println("7) Criar arquivo de índice hash");
-            System.out.println("8) Sair");
+            System.out.println("8) Buscar uma conta via arquivo de índice hash");
+            System.out.println("9) Sair");
             Jogador jogador = new Jogador();
             opcao = sc.nextInt();
 
@@ -58,6 +59,9 @@ public class Menu{
                     break;
                 case 7:
                     Arquivo.criaHash(0);
+                    break;
+                case 8:
+                    Arquivo.buscaHash(0);
                     break;
                 case 9:
                     sair = true;
