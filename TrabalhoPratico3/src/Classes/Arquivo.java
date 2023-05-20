@@ -160,7 +160,6 @@ public class Arquivo{
     
 
     public static void create(Jogador jogador) throws IOException{ 
-
 		try{	
 			fileReader.seek(0);
 			

@@ -1,5 +1,6 @@
 package Classes;
 
+import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,6 +11,10 @@ public class Menu{
     public void exibeMenu() throws Exception{
         Scanner sc = new Scanner(System.in);
         Arquivo arquivo = new Arquivo();
+
+        RandomAccessFile lzwcomprime = new RandomAccessFile("src/Dados/lzwcomprime.db", "rw");
+        RandomAccessFile lzwdescomprime = new RandomAccessFile("src/Dados/lzwdescomprime.db", "rw");
+
         int opcao, id = 0;
         boolean sair = false;
 
@@ -65,10 +70,8 @@ public class Menu{
                     Arquivo.buscaHash(0);
                     break;
                 case 9:
-                    String teste = Arquivo.fileReader.readUTF();
-                    System.out.println(teste);
-                    List<Integer> lista = lzw.compress(teste);
-                    lzw.decompress(lista);
+                    List<Integer> teste = lzw.compress(lzwcomprime,"teste");
+                    lzw.decompress(teste,lzwdescomprime);
                     break;
                 case 10:
                     sair = true;
