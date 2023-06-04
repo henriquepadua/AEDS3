@@ -32,7 +32,9 @@ public class Menu{
             System.out.println("8) Buscar uma conta via arquivo de índice hash");
             System.out.println("9) Compressão usando LZW");
             System.out.println("10) Descompressão usando LZW");
-            System.out.println("11) Sair");
+            System.out.println("11) Buscando padrao usando KMP");
+            System.out.println("12) Buscando padrao usando Booyer Moore");
+            System.out.println("13) Sair");
             Jogador jogador = new Jogador();
             opcao = sc.nextInt();
 
@@ -78,6 +80,16 @@ public class Menu{
                     lzw.decomprimindoLZW(teste,lzwdescomprime);
                     break;
                 case 11:
+                    System.out.println("Digite seu padrao");
+                    String padrao = sc.next();
+                    Kmp.KMPSearch(padrao);
+                    break;
+                case 12:
+                    System.out.println("Digite seu padrao");
+                    String padraoBooyerMoore = sc.next();
+                    BooyerMoore.pesquisa(padraoBooyerMoore.toCharArray());
+                    break;
+                case 13:
                     sair = true;
                     System.out.println("Saindo...");
                     sc.close();
